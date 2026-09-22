@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 2: Floating-Point Error &amp; Catastrophic Cancellation — PHYS 5211</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/katex.min.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">PHYS 5211</a>
+    <ul>
+      <li><a href="../index.html#schedule">Schedule</a></li>
+      <li><a href="../syllabus.html">Syllabus</a></li>
+      <li><a href="../index.html#resources">Resources</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="note-header">
+  <div class="wrap">
+    <p class="breadcrumb"><a href="../index.html#schedule">← Back to schedule</a></p>
+    <h1>Lecture 2 — Floating-Point Error &amp; Catastrophic Cancellation</h1>
+    <p class="meta">Tuesday, Sept 15 · Foundations · Pset 1 assigned</p>
+  </div>
+</header>
+
+<div class="note-body">
+  <div class="wrap">
+
+    <div class="warning-banner">
+      <strong>Schedule note:</strong> starting this week, the class meets Tuesdays and Thursdays, 2:00&ndash;3:30&nbsp;p.m., replacing the Friday first-day slot.
+    </div>
+
+    <h2>1. Floating-point systems, formally</h2>
+    <p>A floating-point system is written $\mathbb{F}(\beta, p, L, U)$. Any normalized nonzero number in it looks like</p>
+    $$x = \pm\left(d_0 + \frac{d_1}{\beta} + \frac{d_2}{\beta^2} + \cdots + \frac{d_{p-1}}{\beta^{p-1}}\right)\beta^{E}, \qquad L \le E \le U,$$
+    <p>with $d_0 \ne 0$ and each digit $d_i \in \{0, 1, \ldots, \beta-1\}$.</p>
+    <table>
+      <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>$\beta$</td><td>Base &mdash; typically 2 for binary floating point.</td></tr>
+        <tr><td>$p$</td><td>Precision: number of significant digits in the significand.</td></tr>
+        <tr><td>$L$</td><td>Lower exponent bound.</td></tr>
+        <tr><td>$U$</td><td>Upper exponent bound.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="example-box">
+      <span class="label">IEEE single precision</span>
+      $$\beta = 2, \qquad p = 24, \qquad L = -126, \qquad U = 127.$$
+      The spacing between representable numbers is <em>not</em> constant &mdash; the same significand patterns repeat at every exponent, so the absolute gap between neighbors grows with magnitude even though the relative precision stays fixed.
+    </div>
+
+    <h2>2. Representation error and machine precision</h2>
+    <p>For a real number $x \in \mathbb{R}$ inside the representable range, there is a unique floating-point approximation $\hat{x}$ satisfying</p>
+    $$\exists!\,\hat{x}\in\mathbb{F} \quad \text{s.t.} \quad |x-\hat{x}| \le \varepsilon_{\mathrm{machine}}\,|x|,$$
+    <p>where the representation error (also called round-off error) comes from rounding $x$ up or down to the nearest representable value, and machine precision is</p>
+    $$\varepsilon_{\mathrm{machine}} = \beta^{1-p}.$$
+    <p>This is a genuinely different quantity from the smallest positive normalized number, $x_{\min} = \beta^L$. Machine precision governs relative spacing near a given magnitude; $x_{\min}$ is set entirely by the lower exponent bound.</p>
+
+    <div class="example-box">
+      <span class="label">Worked example — rounding $x = 5.3$</span>
+      In the same toy system as last class ($\beta=2,\ p=3,\ L=-1,\ U=2$), the nearest representable value to $x = 5.3$ is $\hat{x} = 5$:
+      $$\hat{x} = 5, \qquad |x - \hat{x}| = 0.3000.$$
+      Here $\varepsilon_{\mathrm{machine}} = 2^{1-3} = 0.25$, so the bound $\varepsilon_{\mathrm{machine}}|x| = 1.325$ comfortably covers the actual error of 0.3 &mdash; the bound is a worst case, not a tight prediction of any one rounding.
+    </div>
+
+    <h2>3. Special values: Inf and NaN</h2>
+    <table>
+      <thead><tr><th>Operation</th><th>Floating-point value</th></tr></thead>
+      <tbody>
+        <tr><td>$1/0$</td><td>Inf</td></tr>
+        <tr><td>$0/0$</td><td>NaN</td></tr>
+        <tr><td>$0 \cdot \infty$</td><td>NaN</td></tr>
+        <tr><td>$\infty/\infty$</td><td>NaN</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4. Catastrophic cancellation and associativity</h2>
+    <p>Take six significant decimal digits and</p>
+    $$a = 1.23456\times10^2, \qquad b = -1.23455\times10^2, \qquad c = -1.11123\times10^{-3}.$$
+    <p>Over the real numbers, $(a+b)+c = a+(b+c)$ exactly. Under finite precision, the two evaluation orders don't have to agree, because nearly-cancelling numbers can wipe out significant digits, and every later operation proceeds from that already-degraded intermediate result.</p>
+
+    <div class="example-box">
+      <span class="label">Concrete arithmetic, rounded to $p$ significant decimal digits at each step</span>
+      <strong>$(a+b)+c$:</strong> $123.456 - 123.455 = 0.00100 = \operatorname{fl}(a+b)$, then $0.00100 - 0.00111123 \approx -1.1123\times10^{-4}$.<br><br>
+      <strong>$a+(b+c)$:</strong> $-123.45500000 + 0.00111123 \approx -123.456 = \operatorname{fl}(b+c)$, then $123.456 - 123.456 = 0$.
+    </div>
+    <p>Same three numbers, same mathematical expression, two different stored results &mdash; a difference of $-1.1123\times10^{-4}$ purely from parenthesization. <strong>Floating-point addition is not reliably associative</strong>: the order you group operations in changes which intermediate values get rounded, and that can change the final answer.</p>
+
+    <h2>5. Case study: the quadratic formula</h2>
+    <p>Consider $ax^2 + x - 1 = 0$, with exact roots</p>
+    $$x_{\pm} = \frac{-1 \pm \sqrt{1+4a}}{2a}.$$
+    <p>For $a = 10^{-4}$, the true roots are $x_+ \approx 0.999900019995$ and $x_- \approx -10000.99990002$. The cancellation problem lives entirely in $x_+$: for small positive $a$, $\sqrt{1+4a}$ is close to 1, so the numerator $-1+\sqrt{1+4a}$ subtracts two nearly-equal quantities and can lose most of its significant digits.</p>
+    <p>Multiplying numerator and denominator by the conjugate removes the subtraction entirely:</p>
+    $$\frac{-1+\sqrt{1+4a}}{2a}\cdot\frac{-1-\sqrt{1+4a}}{-1-\sqrt{1+4a}} = \frac{2}{1+\sqrt{1+4a}}.$$
+    <p>The two formulas are algebraically identical, but the rationalized version never subtracts two nearly-equal numbers, so it stays accurate even at low precision.</p>
+
+    <div class="example-box">
+      <span class="label">Naive vs. rationalized, at $p$ rounded significant digits</span>
+      <strong>Naive formula:</strong> $\operatorname{fl}(\sqrt{1+4a}) \to 1$ under coarse rounding, so the numerator rounds to exactly $0$.<br><br>
+      <strong>Rationalized formula:</strong> same rounded square root, but with <em>no subtraction of nearly-equal values</em> &mdash; it lands close to the true reference value of $0.999900019995$.
+    </div>
+
+    <h2>6. The harmonic series and summation order</h2>
+    <p>Consider the partial sums $H_N = \sum_{n=1}^{N} \frac1n$. In finite precision, three distinct failure modes can each masquerade as "the sum has converged":</p>
+    <table>
+      <thead><tr><th>Failure mode</th><th>Condition</th></tr></thead>
+      <tbody>
+        <tr><td>Increment too small relative to the running total</td><td>$\operatorname{fl}\!\left(S_i + \frac1i\right) = S_i$</td></tr>
+        <tr><td>The term itself underflows</td><td>$\dfrac1i < \beta^L$</td></tr>
+        <tr><td>The partial sum overflows the upper range</td><td>$S_i > \beta^U$</td></tr>
+      </tbody>
+    </table>
+    <p>Changing the order you add terms in never changes the true mathematical sum &mdash; but it can change the floating-point answer you get. <strong>Direct summation</strong> accumulates term by term:</p>
+    $$\widehat H_N^{\mathrm{direct}} = \operatorname{fl}\!\Big(\cdots\operatorname{fl}\big(\operatorname{fl}(1+\tfrac12)+\tfrac13\big)+\cdots+\tfrac1N\Big).$$
+    <p><strong>Chunked summation</strong> instead groups terms into blocks of size $m$, sums each block, then adds the block totals: with $S_j^{(m)} = \sum_{i=(j-1)m+1}^{\min(jm,N)} \frac1i$, the block sum $B_N^{(m)} = \sum_j S_j^{(m)}$ equals $H_N$ mathematically, but is computed with a completely different association pattern in floating point.</p>
+
+    <div class="example-box">
+      <span class="label">Direct vs. chunked, low decimal precision, moderate $N$</span>
+      Direct summation: <strong>10.7625</strong>, with the first "no-op" update (where adding the next term leaves the sum unchanged) appearing around $i = 20{,}000$.<br><br>
+      Chunked summation (blocks of 1,000, up to 300 blocks): <strong>13.1893</strong>.<br><br>
+      Same mathematical partial sum, different association pattern, a difference of <strong>2.4268</strong>.
+    </div>
+
+    <div class="warning-banner">
+      <strong>Watch out:</strong> a genuinely convergent sequence and a finite-precision sequence whose increments have simply become too small to register can both <em>look</em> like they've stopped changing. Observing $S_{i+1} = S_i$ tells you the machine has hit a limit &mdash; it does not by itself prove mathematical convergence.
+    </div>
+
+    <p>The general diagnostic: evaluate the same mathematical quantity with more than one reasonable association pattern (direct, chunks of 500, of 1,000, of 10,000, ...). If the answers disagree substantially, the numerical result is algorithm-dependent and shouldn't be trusted as a stand-in for the true value.</p>
+
+    <h2>7. AI coding workflow and homework</h2>
+    <p>For sandboxed agent-assisted coding, GitHub Codespaces restricts an agent to a project workspace, which limits the blast radius of accidental file changes compared with giving an agent broad access to a local machine.</p>
+    <div class="example-box">
+      <span class="label">Homework direction</span>
+      Construct or analyze a series that either converges or diverges, but for which a finite-precision implementation produces a misleading numerical result. The explanation should identify the specific numerical mechanism behind the discrepancy &mdash; not just show that two computed answers differ.
+    </div>
+
+    <h2>Main takeaways</h2>
+    <div class="takeaways">
+      <ul>
+        <li>Floating-point arithmetic operates on a finite set of numbers.</li>
+        <li>Representable range and machine precision are separate properties, set by different parameters.</li>
+        <li>Absolute spacing grows with magnitude even when relative precision stays fixed.</li>
+        <li>Catastrophic cancellation can erase significant digits when nearly-equal numbers are subtracted.</li>
+        <li>Floating-point addition is not reliably associative.</li>
+        <li>Algebraically equivalent formulas can have very different numerical behavior &mdash; rationalizing away a subtraction is one general fix.</li>
+        <li>Changing the summation order is a useful stress test when the exact answer isn't known independently.</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="note-nav">
+    <a href="lecture-01.html">← Previous lecture</a>
+    <a href="template.html">Next lecture →</a>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    PHYS 5211 · Introduction to Scientific Computing in the Era of AI · Northeastern University · Fall 2026
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ]
+    });
+  });
+</script>
+
+</body>
+</html>

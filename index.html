@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHYS 5211 — Scientific Computing in the Era of AI</title>
+<meta name="description" content="Course site for PHYS 5211: Introduction to Scientific Computing in the Era of AI, Northeastern University, Fall 2026.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">PHYS 5211</a>
+    <ul>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="syllabus.html">Syllabus</a></li>
+      <li><a href="#resources">Resources</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Northeastern University · Physics Department · Fall 2026</p>
+    <h1>Introduction to Scientific Computing in the Era of AI</h1>
+    <p class="subhead">A graduate course in the numerical methods that underlie modern computation — from floating-point arithmetic to automatic differentiation — built for a world where AI tools sit on every desk.</p>
+    <dl class="facts">
+      <div class="fact"><dt>Meets</dt><dd>Tuesdays &amp; Thursdays, 2:00&ndash;3:30 PM</dd></div>
+      <div class="fact"><dt>Location</dt><dd>177 Huntington Ave, Room 207</dd></div>
+      <div class="fact"><dt>Instructor</dt><dd>Prof. Mauricio Santillana</dd></div>
+      <div class="fact"><dt>Textbook</dt><dd>Heath, <em>Scientific Computing: An Introductory Survey</em></dd></div>
+    </dl>
+  </div>
+</header>
+
+<section class="block" id="philosophy">
+  <div class="wrap">
+    <h2>How this course works</h2>
+    <p class="section-lede">AI tools — Claude, ChatGPT, Gemini — are required parts of every assignment. They're fast at producing answers. What they can't do for you is understand them.</p>
+    <div class="callout">
+      <strong>The bar isn't a correct output — it's a clear explanation.</strong> Homework in this course uses AI tools deliberately, but grading centers on whether you can explain, to me and to your peers, what you learned and why the method works. Getting a working answer from a model is the easy part; being able to teach it back is the point.
+    </div>
+  </div>
+</section>
+
+<section class="block" id="schedule">
+  <div class="wrap">
+    <h2>Lecture schedule &amp; notes</h2>
+    <p class="section-lede">Updated as the semester progresses. Notes go up after each session — check back after class if a link isn't live yet.</p>
+    <div class="schedule-wrap">
+      <table class="schedule" id="schedule-table">
+        <caption>Lecture schedule</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Topic area</th>
+            <th scope="col">Session</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body">
+          <tr><td colspan="5">Loading schedule…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="resources">
+  <div class="wrap">
+    <h2>Resources</h2>
+    <div class="resource-list">
+      <div class="resource-item">
+        <span class="tag">Syllabus</span>
+        <span>Full course syllabus, grading breakdown, and policies. <a href="syllabus.html">View syllabus →</a></span>
+      </div>
+      <div class="resource-item">
+        <span class="tag">Textbook</span>
+        <span>Michael T. Heath, <em>Scientific Computing: An Introductory Survey</em>, 2nd ed. — the course's primary reference throughout.</span>
+      </div>
+      <div class="resource-item">
+        <span class="tag">AI tools</span>
+        <span>Claude, ChatGPT, and Gemini are required components of homework. Each assignment specifies how they should be used and what explanation is expected alongside the output.</span>
+      </div>
+      <div class="resource-item">
+        <span class="tag">Contact</span>
+        <span>Office hours and email are listed in the syllabus. Bring questions about both the math and the AI-assisted workflow.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    PHYS 5211 · Introduction to Scientific Computing in the Era of AI · Northeastern University · Fall 2026
+  </div>
+</footer>
+
+<script>
+async function loadSchedule() {
+  const tbody = document.getElementById('schedule-body');
+  try {
+    const res = await fetch('data/lectures.json');
+    const lectures = await res.json();
+    tbody.innerHTML = lectures.map(rowHtml).join('');
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="5">Schedule could not be loaded. Check data/lectures.json.</td></tr>';
+    console.error(err);
+  }
+}
+
+function rowHtml(lec) {
+  const pill = {
+    posted: '<span class="status-pill status-posted">Notes posted</span>',
+    upcoming: '<span class="status-pill status-upcoming">Upcoming</span>',
+    tba: '<span class="status-pill status-tba">Topic TBA</span>'
+  }[lec.status] || '';
+
+  const notesCell = lec.notesUrl
+    ? `<a class="notes-link" href="${lec.notesUrl}">View notes →</a>`
+    : `<span class="notes-link disabled">Not yet posted</span>`;
+
+  return `<tr>
+    <td>${lec.session}</td>
+    <td class="session-date">${lec.date}</td>
+    <td>${lec.topic}</td>
+    <td>${lec.title} ${pill}</td>
+    <td>${notesCell}</td>
+  </tr>`;
+}
+
+loadSchedule();
+</script>
+
+</body>
+</html>

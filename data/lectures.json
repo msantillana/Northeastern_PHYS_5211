@@ -1,0 +1,34 @@
+[
+  {
+    "session": 1,
+    "date": "Fri, Sep 11",
+    "title": "Numerical Computing & Floating-Point Arithmetic",
+    "topic": "Foundations",
+    "status": "posted",
+    "notesUrl": "notes/lecture-01.html"
+  },
+  {
+    "session": 2,
+    "date": "Tue, Sep 15",
+    "title": "Floating-Point Error & Catastrophic Cancellation",
+    "topic": "Foundations",
+    "status": "posted",
+    "notesUrl": "notes/lecture-02.html"
+  },
+  {
+    "session": 3,
+    "date": "Tue, Sep 22",
+    "title": "Solving Pset 1 with AI Agents; Gaussian Elimination & LU Factorization",
+    "topic": "Linear Algebra",
+    "status": "upcoming",
+    "notesUrl": null
+  },
+  {
+    "session": 4,
+    "date": "Thu, Sep 24",
+    "title": "LU Factorization Algorithm; Gaussian Elimination with Pivoting; Operation Count",
+    "topic": "Linear Algebra",
+    "status": "tba",
+    "notesUrl": null
+  }
+]

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 1: Numerical Computing &amp; Floating-Point Arithmetic — PHYS 5211</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/katex.min.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">PHYS 5211</a>
+    <ul>
+      <li><a href="../index.html#schedule">Schedule</a></li>
+      <li><a href="../syllabus.html">Syllabus</a></li>
+      <li><a href="../index.html#resources">Resources</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="note-header">
+  <div class="wrap">
+    <p class="breadcrumb"><a href="../index.html#schedule">← Back to schedule</a></p>
+    <h1>Lecture 1 — Numerical Computing &amp; Floating-Point Arithmetic</h1>
+    <p class="meta">Friday, Sept 11 · First class · Foundations</p>
+  </div>
+</header>
+
+<div class="note-body">
+  <div class="wrap">
+
+    <h2>1. Why numerical reliability matters</h2>
+    <p>The question this course keeps returning to is not "does the program run?" but "is the answer right?" Code that executes without errors can still return a result that is inaccurate or inappropriate for the problem being asked. Successful execution says nothing about numerical correctness.</p>
+    <p>Uncertainty quantification is the broader discipline this sits inside: using math and computation to characterize how uncertain a result actually is. A handful of well-known engineering failures make the stakes concrete &mdash; the <a href="https://www.ima.umn.edu/~arnold/disasters/therac.html" target="_blank" rel="noopener">Therac-25 radiation overdoses</a>, the <a href="https://www.ima.umn.edu/~arnold/disasters/patriot.html" target="_blank" rel="noopener">Patriot missile failure</a>, the Ariane 5 maiden-flight failure, and the Sleipner A platform collapse. Each involved a different mix of software, numerical, design, and validation failures, but all of them trace back to trusting a computed number without enough independent checking.</p>
+
+    <h2>2. AI-assisted scientific computing</h2>
+    <p>AI tools can generate working code fast. What they can't do is know, on their own, whether that code solves <em>your</em> problem correctly, handles bad inputs sensibly, or stays stable under small perturbations &mdash; that judgment is still on you. The recurring themes of this course, stability and accuracy, are exactly the things an AI-generated solution won't check for you automatically.</p>
+
+    <div class="example-box">
+      <span class="label">Learning loop for this course</span>
+      Understand the problem and method (implement it yourself when it helps) → generate an AI-assisted solution → validate the result against a reference → explain any discrepancy and what it revealed.
+    </div>
+
+    <p>A useful habit: ask an AI assistant to implement a numerical method, then stress-test it on inputs designed to expose its assumptions &mdash; very small increments, large differences in scale, invalid values. For example, ask for a program that repeatedly adds a small number to a large one, then check whether each increment actually changes the stored value. Finding the failure, explaining <em>why</em> it happens, and proposing a fix is the actual skill being built here.</p>
+
+    <h2>3. Course topics at a glance</h2>
+    <table>
+      <thead><tr><th>Area</th><th>Example topics</th></tr></thead>
+      <tbody>
+        <tr><td>Computational foundations</td><td>Floating-point arithmetic, condition numbers, error propagation</td></tr>
+        <tr><td>Linear algebra</td><td>Direct and iterative solvers, LU and Cholesky decompositions</td></tr>
+        <tr><td>Transform methods</td><td>FFT, spectral analysis</td></tr>
+        <tr><td>Data-driven methods and ML</td><td>Least squares, regularization, LASSO</td></tr>
+        <tr><td>Root finding and optimization</td><td>Newton&ndash;Raphson</td></tr>
+        <tr><td>Differential equations</td><td>Initial-value problems</td></tr>
+        <tr><td>Differentiation</td><td>Automatic differentiation, gradient validation, stability</td></tr>
+        <tr><td>Deployment</td><td>Mixed precision, reproducibility failures</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4. Problem formulation: well-posedness, conditioning, stability</h2>
+    <p>A mathematical problem is <strong>well-posed</strong> when it satisfies three properties: a solution <em>exists</em>, that solution is <em>unique</em>, and the solution depends <em>continuously</em> on the input data (initial or boundary conditions). These are properties of the mathematical problem itself, independent of how &mdash; or whether &mdash; you compute it. Merely writing down the conditions a solution should satisfy doesn't establish that one exists.</p>
+    <p>Formulating a problem, proving it has a unique solution, and choosing a reliable way to compute that solution are three separate jobs. The linear system $Ax = b$ is the simplest example: writing it down, showing $A$ is invertible, and picking a numerically sound solver are each distinct steps.</p>
+
+    <table>
+      <thead><tr><th>Concept</th><th>Object of study</th><th>Main question</th></tr></thead>
+      <tbody>
+        <tr><td>Well-posedness</td><td>Mathematical problem</td><td>Existence, uniqueness, continuous dependence?</td></tr>
+        <tr><td>Conditioning</td><td>Problem at given inputs</td><td>How sensitive is the solution?</td></tr>
+        <tr><td>Stability</td><td>Algorithm</td><td>How do computational errors affect its behavior?</td></tr>
+        <tr><td>Accuracy</td><td>Computed result</td><td>How close is it to the intended answer?</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Conditioning</strong> measures how sensitive a problem's solution is to perturbations in its inputs &mdash; continuous dependence (well-posedness) does not by itself imply low sensitivity. <strong>Stability</strong> is a separate concern about how an algorithm handles the errors introduced during the computation itself.</p>
+
+    <div class="example-box">
+      <span class="label">Scalar condition number</span>
+      For a differentiable $f$ with $x \ne 0$ and $f(x) \ne 0$, the local relative condition number is
+      $$\kappa_f(x) = \left|\frac{x f'(x)}{f(x)}\right|.$$
+      Take $f(x) = x - 1$: this function is perfectly continuous, but $\kappa_f(x) = |x/(x-1)|$ blows up near $x = 1$. A tiny relative change in the input near that point produces a much larger relative change in the output &mdash; the problem is <em>ill-conditioned</em> there even though it's well-posed everywhere.
+    </div>
+
+    <h2>5. Number representation</h2>
+    <p>Floating-point representation borrows the idea behind scientific notation: $123456 = 1.23456 \times 10^5$ and $0.00568 = 5.68 \times 10^{-3}$. The sign of the number and the sign of the exponent play different roles &mdash; a negative exponent rescales the magnitude, it doesn't make the value negative.</p>
+    <p>In positional notation, each digit contributes its value times a power of the base. The binary number $(101.01)_2$ means</p>
+    $$5.25 = 1\cdot2^2 + 0\cdot2^1 + 1\cdot2^0 + 0\cdot2^{-1} + 1\cdot2^{-2},$$
+    <p>and its normalized form is $(1.0101)_2 \times 2^2$, using five significant binary digits.</p>
+    <p>A general normalized floating-point number takes the form</p>
+    $$x = s\,(d_0.d_1\ldots d_{p-1})_\beta\,\beta^{e}, \qquad d_0 \ne 0,$$
+    <p>built from a sign $s \in \{-1, +1\}$, a base $\beta$, a precision $p$ (the number of significant digits kept, including the leading one), digits $d_i \in \{0, 1, \ldots, \beta-1\}$, and an integer exponent $e$ bounded by $L \le e \le U$. For a normalized nonzero number the leading digit $d_0$ can't be zero &mdash; in binary that forces $d_0 = 1$. Zero is stored as a special case.</p>
+
+    <h2>6. A toy floating-point system</h2>
+    <p>To make all of this concrete, take the smallest system that still shows the interesting behavior: $\beta = 2$, $p = 3$, $L = -1$, $U = 2$. The significand has three binary digits,</p>
+    $$(1.d_1d_2)_2 = 1 + \frac{d_1}{2} + \frac{d_2}{4},$$
+    <p>giving four possible significands: $(1.00)_2 = 1$, $(1.01)_2 = 1.25$, $(1.10)_2 = 1.5$, $(1.11)_2 = 1.75$. Multiplying each by every allowed power of two gives all 16 positive representable values (16 negative counterparts plus zero complete the system &mdash; 33 numbers total).</p>
+
+    <table>
+      <thead><tr><th>Exponent $e$</th><th>Positive values</th><th>Spacing</th></tr></thead>
+      <tbody>
+        <tr><td>&minus;1</td><td>0.5, 0.625, 0.75, 0.875</td><td>0.125</td></tr>
+        <tr><td>0</td><td>1, 1.25, 1.5, 1.75</td><td>0.25</td></tr>
+        <tr><td>1</td><td>2, 2.5, 3, 3.5</td><td>0.5</td></tr>
+        <tr><td>2</td><td>4, 5, 6, 7</td><td>1</td></tr>
+      </tbody>
+    </table>
+
+    <div class="example-box">
+      <span class="label">Worked example</span>
+      $$(1.01)_2 \times 2^{-1} = 1\cdot2^{-1} + 0\cdot2^{-2} + 1\cdot2^{-3} = \frac12 + \frac18 = \frac58 = 0.625.$$
+    </div>
+
+    <p>An interactive version of this system &mdash; letting you change $\beta$, $p$, $L$, $U$ and place a value on the number line to see it round &mdash; was shown in class; see the standalone floating-point number-line module linked from the resources section for the same worked example.</p>
+
+    <h3>Range and spacing</h3>
+    <p>For a normalized system, the smallest and largest positive representable magnitudes are</p>
+    $$x_{\min}^{+} = \beta^L, \qquad x_{\max} = (\beta - \beta^{1-p})\,\beta^U,$$
+    <p>and within a single exponent block the spacing between neighbors is</p>
+    $$\Delta_e = \beta^{\,e-p+1}.$$
+    <p>For our toy system, $x_{\min}^{+} = 0.5$, $x_{\max} = 7$, and $\Delta_e = 2^{e-2}$: raising the exponent by one <em>doubles</em> the spacing, while raising the precision by one <em>halves</em> it at a fixed exponent. Range and exact representability are different things &mdash; 4.625 sits well within this system's range but falls between two representable values, while 8 would need exponent 3 and is simply out of range.</p>
+    <div class="warning-banner">
+      <strong>Watch out:</strong> a terminating binary expansion requires a denominator that's a power of 2. So $1/8 = (0.001)_2$ terminates, but $1/10 = (0.000110011\ldots)_2$ repeats forever &mdash; no amount of extra binary precision makes 0.1 exactly representable.
+    </div>
+
+    <h2>7. Numerical errors</h2>
+    <p>Two distinct sources of error show up even before you get to a full computation.</p>
+    <table>
+      <thead><tr><th>Stage</th><th>Source of error</th></tr></thead>
+      <tbody>
+        <tr><td>Input representation</td><td>The original value simply isn't available in the number system.</td></tr>
+        <tr><td>Arithmetic operation</td><td>The exact result of an operation on two representable numbers isn't itself representable.</td></tr>
+      </tbody>
+    </table>
+    <p>Let $\operatorname{fl}(x)$ denote the rounded machine representation of $x$. In the toy system, the smallest positive value is 0.5, so $\operatorname{fl}(0.1) = 0$ &mdash; 0.1 simply falls in the gap near zero. Both 4 and 0.625 <em>are</em> exactly representable, yet $4 + 0.625 = 4.625$ is not: $\operatorname{fl}(4+0.625) = 5$, an arithmetic rounding error of $5 - 4.625 = 0.375$, even though neither input carried any representation error at all.</p>
+
+    <div class="example-box">
+      <span class="label">Order of addition matters</span>
+      Using the toy system's midpoint rule, 4.5 rounds to 4, so $\operatorname{fl}(4+0.5)=4$ &mdash; a nonzero increment can leave the stored value completely unchanged. That has a real consequence for the order you add things in:
+      $$\operatorname{fl}\bigl(\operatorname{fl}(4+0.5)+0.5\bigr) = 4, \qquad \operatorname{fl}\bigl(4+\operatorname{fl}(0.5+0.5)\bigr) = 5.$$
+      The first order loses both increments separately; the second combines them into 1 before ever touching the 4. <strong>Floating-point addition is not generally associative.</strong>
+    </div>
+
+    <h2>Validation checklist</h2>
+    <div class="takeaways">
+      <ul>
+        <li>Check whether the mathematical problem is well-posed in the first place.</li>
+        <li>State the assumptions your computational method introduces.</li>
+        <li>Separate input representation errors from arithmetic errors.</li>
+        <li>Compare against an analytic answer or an independent calculation.</li>
+        <li>Explain how precision, input scale, and operation order affected the result.</li>
+      </ul>
+    </div>
+
+    <h2>Further reading</h2>
+    <p>Heath, Chapter 1. David Goldberg, <em>What Every Computer Scientist Should Know About Floating-Point Arithmetic</em>. Douglas N. Arnold's write-ups on the Patriot missile and Ariane 5 failures. Cornell CS 4220 notes on forward/backward error and conditioning.</p>
+
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="note-nav">
+    <span></span>
+    <a href="lecture-02.html">Next lecture →</a>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    PHYS 5211 · Introduction to Scientific Computing in the Era of AI · Northeastern University · Fall 2026
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.21/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ]
+    });
+  });
+</script>
+
+</body>
+</html>

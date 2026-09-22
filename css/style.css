@@ -1,0 +1,411 @@
+/* ==========================================================================
+   PHYS 5211 — Introduction to Scientific Computing in the Era of AI
+   Core stylesheet
+   ========================================================================== */
+
+:root {
+  --navy: #1B2942;
+  --navy-deep: #131E33;
+  --gold: #C9A34E;
+  --gold-deep: #A9822F;
+  --teal: #2F6D63;
+  --rust: #B15A38;
+  --paper: #FAF9F6;
+  --paper-white: #FFFFFF;
+  --ink: #232733;
+  --ink-soft: #4A5164;
+  --line: #DEDACE;
+
+  --serif: Cambria, Georgia, "Times New Roman", serif;
+  --sans: Calibri, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  --max-w: 920px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+
+a {
+  color: var(--gold-deep);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(169, 130, 47, 0.35);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+a:hover { border-color: var(--gold-deep); color: var(--rust); }
+a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  color: var(--navy);
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 0.5em;
+}
+
+p { margin: 0 0 1em; max-width: 68ch; }
+
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ---------- Site header / nav ---------- */
+
+.site-nav {
+  background: var(--paper-white);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.site-nav .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.site-nav .brand {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 1.05rem;
+  border-bottom: none;
+}
+
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+}
+
+.site-nav a {
+  color: var(--ink-soft);
+  border-bottom: none;
+  font-size: 0.95rem;
+}
+.site-nav a:hover { color: var(--rust); }
+
+/* ---------- Hero ---------- */
+
+.hero {
+  background: var(--navy);
+  background-image: linear-gradient(155deg, var(--navy) 0%, var(--navy-deep) 100%);
+  color: #EDEFF3;
+  padding: 68px 0 56px;
+  border-bottom: 4px solid var(--gold);
+}
+
+.hero .eyebrow {
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  margin: 0 0 14px;
+}
+
+.hero h1 {
+  color: #F6F4EE;
+  font-size: 2.5rem;
+  max-width: 20ch;
+  margin-bottom: 0.35em;
+}
+
+.hero .subhead {
+  color: #C9CEDA;
+  font-size: 1.15rem;
+  max-width: 46ch;
+  margin-bottom: 1.4em;
+}
+
+.hero .facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px 40px;
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255,255,255,0.14);
+}
+
+.hero .fact dt {
+  font-size: 0.78rem;
+  color: var(--gold);
+  margin-bottom: 3px;
+}
+.hero .fact dd {
+  margin: 0;
+  color: #EDEFF3;
+  font-size: 1rem;
+}
+
+/* ---------- Sections ---------- */
+
+section.block {
+  padding: 52px 0;
+  border-bottom: 1px solid var(--line);
+}
+section.block:last-of-type { border-bottom: none; }
+
+section.block h2 {
+  font-size: 1.55rem;
+  margin-bottom: 0.6em;
+}
+
+.section-lede {
+  color: var(--ink-soft);
+  max-width: 62ch;
+  margin-bottom: 1.8em;
+}
+
+/* ---------- Philosophy callout ---------- */
+
+.callout {
+  background: var(--paper-white);
+  border-left: 4px solid var(--teal);
+  padding: 18px 24px;
+  border-radius: 3px;
+  color: var(--ink-soft);
+  max-width: 68ch;
+}
+.callout strong { color: var(--navy); }
+
+/* ---------- Schedule table ---------- */
+
+.schedule-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper-white);
+}
+
+table.schedule {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+table.schedule caption { display: none; }
+
+table.schedule thead th {
+  text-align: left;
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--navy);
+  background: #F1EEE5;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+table.schedule td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  color: var(--ink);
+}
+
+table.schedule tbody tr:last-child td { border-bottom: none; }
+table.schedule tbody tr:hover { background: #FAF6EC; }
+
+.session-date { color: var(--ink-soft); white-space: nowrap; font-size: 0.92rem; }
+
+.status-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-family: var(--sans);
+}
+.status-posted { background: rgba(47,109,99,0.14); color: var(--teal); }
+.status-upcoming { background: rgba(201,163,78,0.16); color: var(--gold-deep); }
+.status-tba { background: #EDEBE4; color: var(--ink-soft); }
+
+.notes-link { font-weight: 600; }
+.notes-link.disabled {
+  color: var(--ink-soft);
+  border-bottom: 1px dashed var(--line);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ---------- Resource cards (used sparingly — not a generic card grid) ---------- */
+
+.resource-list {
+  display: grid;
+  gap: 14px;
+}
+
+.resource-item {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.resource-item:last-child { border-bottom: none; }
+
+.resource-item .tag {
+  flex: 0 0 auto;
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--rust);
+  font-size: 0.85rem;
+  min-width: 92px;
+}
+
+/* ---------- Footer ---------- */
+
+footer.site-footer {
+  background: var(--navy-deep);
+  color: #AAB2C4;
+  padding: 30px 0;
+  font-size: 0.88rem;
+}
+footer.site-footer a { color: #D9C48C; border-bottom: 1px solid rgba(217,196,140,0.35); }
+footer.site-footer a:hover { color: #F0E4BC; }
+
+/* ---------- Lecture note pages ---------- */
+
+.note-header {
+  background: var(--paper-white);
+  border-bottom: 1px solid var(--line);
+  padding: 34px 0 26px;
+}
+
+.note-header .breadcrumb {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+.note-header .breadcrumb a { border-bottom: none; color: var(--teal); }
+
+.note-header h1 { font-size: 1.9rem; margin-bottom: 0.3em; }
+.note-header .meta { color: var(--ink-soft); font-size: 0.95rem; }
+
+.note-body { padding: 40px 0 60px; }
+.note-body h2 {
+  font-size: 1.3rem;
+  margin-top: 1.6em;
+  padding-top: 0.2em;
+}
+.note-body h3 { font-size: 1.05rem; color: var(--teal); }
+.note-body ul, .note-body ol { max-width: 66ch; padding-left: 1.3em; }
+.note-body li { margin-bottom: 0.4em; }
+
+.note-body table {
+  border-collapse: collapse;
+  margin: 1.1em 0;
+  font-size: 0.92rem;
+  background: var(--paper-white);
+}
+.note-body th, .note-body td {
+  border: 1px solid var(--line);
+  padding: 7px 12px;
+  text-align: left;
+}
+.note-body th {
+  background: #F1EEE5;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.example-box {
+  border: 1px solid var(--line);
+  background: var(--paper-white);
+  border-left: 4px solid var(--gold);
+  padding: 16px 20px;
+  border-radius: 3px;
+  margin: 1.2em 0;
+  max-width: 68ch;
+}
+.example-box .label {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--gold-deep);
+  font-size: 0.85rem;
+  margin-bottom: 0.4em;
+  display: block;
+}
+
+.takeaways {
+  background: var(--paper-white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px 24px;
+  max-width: 68ch;
+}
+.takeaways li { margin-bottom: 0.55em; }
+
+.note-body pre {
+  background: var(--navy-deep);
+  color: #E4E7EE;
+  padding: 16px 18px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.note-body code {
+  font-family: "Consolas", "SF Mono", Menlo, monospace;
+  font-size: 0.9em;
+  background: #F1EEE5;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+.note-body pre code { background: none; padding: 0; }
+
+.warning-banner {
+  border: 1px solid rgba(177,90,56,0.35);
+  background: rgba(177,90,56,0.08);
+  color: #7A3A22;
+  padding: 14px 18px;
+  border-radius: 4px;
+  margin: 1.4em 0;
+  max-width: 68ch;
+  font-size: 0.95rem;
+}
+.warning-banner strong { color: var(--rust); }
+
+.note-nav {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  margin-top: 44px;
+  padding-top: 22px;
+}
+.note-nav a { border-bottom: none; font-weight: 600; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: 2rem; }
+  .site-nav ul { gap: 16px; }
+  section.block { padding: 40px 0; }
+  .hero { padding: 48px 0 40px; }
+}
