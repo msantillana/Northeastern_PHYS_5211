@@ -12,7 +12,7 @@ Class map for Physics 5211: Introduction to Scientific Computing in the era of A
 
 **Sept 15th:** (Pset 1 assigned) Floating point systems and arithmetics. Catastrophic cancellation and Ill-conditioned problems. cancellation in linear algebra problems (small pivots). Problems that may be “well-posed” mathematically may be ill conditioned in floating point arithmetics, in the sense that small representation errors in the input may lead to vary vary different results from the desired calculation. Think of tan(x) when evaluated near \pi/2
 
-**Week 3**
+**Week 3**\
 **Sept 22nd:** (Solving problem set 1 with AI agents.) Solution to Linear systems using Gaussian Elimination. LU factorization using computers.
 
 **Sept 24nd:** LU factorization using computers (algorithm). Linear systems: Gaussian elimination with pivoting. Operation count. 
