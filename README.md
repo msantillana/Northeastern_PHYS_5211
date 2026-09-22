@@ -1,10 +1,10 @@
 # Northeastern_PHYS_5211
-Class Notes for PHYS 5211 "Introduction to Scientific Computing in the AI era"
+Class Notes for PHYS 5211 "Introduction to Scientific Computing in the AI era" (Fall 2026)
 
 Class map for Physics 5211: Introduction to Scientific Computing in the era of AI (Fall 2026)
 
-Week by week topics
-**---Week 1**
+# Week by week topics
+**---Week 1**\\
 Sept 11th: First day of classes. Presentation of the class. Catastrophic Scientific computing examples. Approximations in Scientific Computing. Floating point numbers.
 
 **—Week 2**
