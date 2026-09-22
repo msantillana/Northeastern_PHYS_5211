@@ -17,6 +17,14 @@
   },
   {
     "session": 3,
+    "date": "Thu, Sep 17",
+    "title": "Ill-Conditioned Problems & Cancellation in Linear Algebra",
+    "topic": "Foundations",
+    "status": "tba",
+    "notesUrl": null
+  },
+  {
+    "session": 4,
     "date": "Tue, Sep 22",
     "title": "Solving Pset 1 with AI Agents; Gaussian Elimination & LU Factorization",
     "topic": "Linear Algebra",
@@ -24,7 +32,7 @@
     "notesUrl": null
   },
   {
-    "session": 4,
+    "session": 5,
     "date": "Thu, Sep 24",
     "title": "LU Factorization Algorithm; Gaussian Elimination with Pivoting; Operation Count",
     "topic": "Linear Algebra",
